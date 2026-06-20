@@ -3,32 +3,12 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 import { Movie } from '@/lib/tmdb/types';
 import { getImageUrl, GENRE_MAP } from '@/lib/utils';
 import { RatingBadge } from '../movie/RatingBadge';
 import { Button } from '../ui/Button';
 import { Trophy, Clock } from 'lucide-react';
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2
-    }
-  }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: [0.2, 0.65, 0.3, 0.9] as const }
-  }
-};
 
 interface HeroProps {
   movie: Movie;
@@ -38,7 +18,9 @@ interface HeroProps {
 
 export function Hero({ movie, rank, isTrending }: HeroProps) {
   const { scrollY } = useScroll();
-  const yParallax = useTransform(scrollY, [0, 500], [0, 150]);
+  const shouldReduceMotion = useReducedMotion();
+  
+  const yParallax = useTransform(scrollY, [0, 500], [0, shouldReduceMotion ? 0 : 150]);
   const opacityFade = useTransform(scrollY, [0, 300], [1, 0.3]);
 
   if (!movie) return null;
@@ -48,6 +30,26 @@ export function Hero({ movie, rank, isTrending }: HeroProps) {
     .filter(Boolean)
     .slice(0, 3) || ['Movie'];
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.1,
+        delayChildren: shouldReduceMotion ? 0 : 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: shouldReduceMotion ? 0 : 0.6, ease: [0.2, 0.65, 0.3, 0.9] as const }
+    }
+  };
+
   return (
     <div className="relative w-full min-h-[75vh] flex items-center overflow-hidden bg-[#08090C]">
       <motion.div 
@@ -55,9 +57,9 @@ export function Hero({ movie, rank, isTrending }: HeroProps) {
         className="absolute inset-0 z-0"
       >
         <motion.div 
-          initial={{ scale: 1.05, opacity: 0 }}
+          initial={{ scale: shouldReduceMotion ? 1 : 1.05, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 1.5, ease: "easeOut" }}
+          transition={{ duration: shouldReduceMotion ? 0 : 1.5, ease: "easeOut" }}
           className="relative w-full h-full"
         >
           <Image

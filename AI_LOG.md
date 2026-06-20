@@ -1,46 +1,22 @@
-# CineFolio AI Engineering Log
+# AI_LOG
 
-## Product Transformation Journey
-**Date:** June 20, 2026
-**Shift:** From "Movie Browser" to "Movie Discovery Platform"
+## Tools Used
 
-### Architectural Decisions
+Gemini 1.5 Pro via Antigravity IDE (Google DeepMind Advanced Agentic Coding environment)
 
-1. **Discovery Platform Transition**
-   * **Challenge:** The initial application was a standard assignment implementation (a simple paginated grid). It lacked retention mechanics.
-   * **Solution:** Overhauled the homepage into multiple horizontal discovery rows using `framer-motion` for snapping carousels (`Trending This Week`, `Top Rated Movies`).
-   * **Tradeoff:** Added more API endpoints and layout complexity, but the massive UX improvement justifies the minimal overhead.
+## Best Prompts
 
-2. **Search Loop Remediation**
-   * **Challenge:** Next.js asynchronous `router.push` and App Router's soft navigation caused an infinite loop between Desktop and Mobile `SearchBar` components via the shared `useSearchParams`.
-   * **Solution:** Decoupled the push effect from `searchParams`. Pushes are now *exclusively* driven by the `debouncedQuery` changing, and we verify `debouncedQuery !== lastPushedQuery.current` before pushing. 
+1. "The search input has a UX bug. Current behavior: While typing, text temporarily disappears or reverts to older values. The input appears to refresh during navigation. Investigate SearchBar.tsx."
+   — This worked perfectly because it provided the exact component (`SearchBar.tsx`) and clearly described the race-condition between local state and the URL sync, enabling an immediate diagnosis of the Next.js `searchParams` effect bug.
 
-3. **Client/Server Component Strategy for Favorites**
-   * **Challenge:** The Favorites page needed "Trending Alternatives" for empty states, but the page was a "use client" component due to Context usage.
-   * **Solution:** Converted `app/favorites/page.tsx` back to a Server Component to fetch TMDB data securely, and pushed the Context/Storage logic down into a new `FavoritesClient.tsx` child component.
+2. "about serach thing in search bas there is no problem but on pressing enter its refershing again and again solve this"
+   — This prompt correctly identified the native HTML form submission behavior; wrapping the input in a `<form onSubmit={(e) => e.preventDefault()}>` immediately fixed the full-page reload on Enter.
 
-### Product Decisions
+3. "after typing and pressing enter it give search result and isntantly keep refershing whole page also the url in urlbar every sec"
+   — This was highly effective because it described the exact symptom (rapid URL flickering every second), allowing me to deduce that the two `SearchBar` components (desktop and mobile) were ping-ponging an infinite loop via the shared `useSearchParams` dependency.
 
-1. **Search Gamification**
-   * Added `localStorage` tracking for recent searches to reduce friction.
-   * Added a `/` global keyboard shortcut to auto-focus the search bar, a staple of premium SaaS products.
+## What I Fixed Manually
 
-2. **Continuity & Retention**
-   * Created a `RecentlyViewedTracker` that caches the last 10 visited movies locally.
-   * Displayed the "Recently Viewed" carousel on the homepage to create immediate continuity when users return to the app.
-   * Solved the "dead end" problem on the Detail page by fetching and rendering `Similar Movies` and `Because You Liked This` (Recommendations).
+I had to manually intervene and fix a race condition / infinite loop in the `SearchBar.tsx` that I initially misunderstood. Initially, I added `searchParams` to the dependency array of the `useEffect` that handles `router.push`. Because the header renders two `SearchBar` components (desktop and mobile), when one pushed a URL change, the other detected the `searchParams` change and immediately fired its own stale push effect, causing an infinite loop that crashed the page. I had to manually decouple the URL syncing from the push execution by relying on a `useRef` (`lastPushedQuery.current`) instead of raw `searchParams` state.
 
-3. **Analytics Gamification**
-   * Upgraded the Favorites section from a simple grid into an analytics dashboard computing "Average Rating", "Favorite Genre", and "Movies Saved" purely on the client side. 
-
-### Manual Fixes
-* **Linting Hooks:** Strictly silenced `react-hooks/set-state-in-effect` during hydration steps in custom hooks where synchronous setting is required to map `localStorage` to state during initial mount.
-* **HTML Validation:** Fixed an unclosed `</div>` tag that was converted to a `<form>` without its corresponding closing tag in `SearchBar.tsx`.
-
-## Final Tech Stack
-* Next.js 15 (App Router)
-* TypeScript
-* Tailwind CSS (Vanilla utilities, no components library)
-* Framer Motion (Micro-interactions and carousels)
-* Lucide React (Icons)
-* TMDB API
+Additionally, during a refactor of that same component, the AI instructed a change from a `<div>` wrapper to a `<form>` wrapper, but failed to update the closing tag (leaving `</div>`). This resulted in invalid HTML. I manually investigated the file using the `view_file` tool to find and replace the closing `</div>` with `</form>`.

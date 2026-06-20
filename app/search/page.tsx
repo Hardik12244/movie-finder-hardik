@@ -20,43 +20,33 @@ export default async function SearchPage({
   let movies: Movie[] = [];
   let trending: Movie[] = [];
   let totalPages = 0;
-  let hasError = false;
 
-  try {
-    if (query) {
-      const data = await searchMovies(query, validPage);
-      movies = data.results;
-      totalPages = data.totalPages;
-    }
-    
-    // Always fetch trending for empty states / initial discovery
-    if (!query || movies.length === 0) {
-      const trendingData = await getTrendingMovies('week', 1);
-      trending = trendingData.results.slice(0, 15);
-    }
-  } catch (error) {
-    console.error(error);
-    hasError = true;
+  if (query) {
+    const data = await searchMovies(query, validPage);
+    movies = data.results;
+    totalPages = data.totalPages;
+  }
+  
+  // Always fetch trending for empty states / initial discovery
+  if (!query || movies.length === 0) {
+    const trendingData = await getTrendingMovies('week', 1);
+    trending = trendingData.results.slice(0, 15);
   }
 
   return (
     <div className="max-w-[1440px] mx-auto w-full px-[var(--space-4)] md:px-[var(--space-6)] py-[var(--space-12)]">
-      {query && !hasError && movies.length > 0 && (
+      {query && movies.length > 0 && (
         <div className="flex items-baseline gap-3 mb-[var(--space-8)]">
           <h2 className="text-[28px] font-bold tracking-tight text-[var(--color-text-primary)]">
             Search results for &ldquo;{query}&rdquo;
           </h2>
           <span className="text-[15px] font-medium text-[var(--color-text-secondary)]">
-            {movies.length > 0 ? 'Found matches' : ''}
+            Found matches
           </span>
         </div>
       )}
 
-      {hasError ? (
-        <div className="text-center py-20 text-[var(--color-error)]">
-          Failed to load movies. Please try again later.
-        </div>
-      ) : !query ? (
+      {!query ? (
         <div className="pt-[5vh] flex flex-col items-center">
           <EmptyState
             icon={Sparkles}

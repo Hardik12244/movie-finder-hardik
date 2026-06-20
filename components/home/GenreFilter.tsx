@@ -3,7 +3,7 @@
 import React, { Suspense } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 
 // Extract subset of popular genres for the chips
 const POPULAR_GENRES = [
@@ -20,6 +20,7 @@ function GenreFilterInner({ currentGenre }: { currentGenre?: string }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const shouldReduceMotion = useReducedMotion();
 
   const handleSelect = (id: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -56,9 +57,9 @@ function GenreFilterInner({ currentGenre }: { currentGenre?: string }) {
           >
             {isSelected && (
               <motion.div
-                layoutId="activeGenre"
+                layoutId={shouldReduceMotion ? undefined : "activeGenre"}
                 className="absolute inset-0 bg-[var(--color-primary)] rounded-full -z-10"
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                transition={shouldReduceMotion ? { duration: 0 } : { type: "spring", stiffness: 300, damping: 30 }}
               />
             )}
             <span className="relative z-10">{genre.name}</span>

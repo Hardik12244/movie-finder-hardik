@@ -36,13 +36,14 @@ function PaginationInner({ currentPage, totalPages, basePath = '/' }: Pagination
         variant="icon"
         size="icon"
         disabled={currentPage <= 1}
+        aria-disabled={currentPage <= 1}
         onClick={() => handlePageChange(currentPage - 1)}
         aria-label="Previous page"
       >
         <ChevronLeft className="w-5 h-5" />
       </Button>
 
-      <div className="font-medium text-[15px] text-[var(--color-text-secondary)] tabular-nums tracking-wide">
+      <div className="font-medium text-[15px] text-[var(--color-text-secondary)] tabular-nums tracking-wide" aria-live="polite">
         Page <span className="text-[var(--color-text-primary)]">{currentPage}</span> of {totalPages}
       </div>
 
@@ -50,6 +51,7 @@ function PaginationInner({ currentPage, totalPages, basePath = '/' }: Pagination
         variant="icon"
         size="icon"
         disabled={currentPage >= totalPages}
+        aria-disabled={currentPage >= totalPages}
         onClick={() => handlePageChange(currentPage + 1)}
         aria-label="Next page"
       >

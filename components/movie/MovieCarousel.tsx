@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView, useReducedMotion } from 'framer-motion';
 import { Movie } from '@/lib/tmdb/types';
 import { MovieCard } from './MovieCard';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -12,23 +12,24 @@ interface MovieCarouselProps {
   movies: Movie[];
 }
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.05, delayChildren: 0.1 }
-  }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, x: 20 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.4 } }
-};
-
 export function MovieCarousel({ title, movies }: MovieCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, margin: "-100px" });
+  const shouldReduceMotion = useReducedMotion();
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: shouldReduceMotion ? 0 : 0.05, delayChildren: shouldReduceMotion ? 0 : 0.1 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, x: shouldReduceMotion ? 0 : 20 },
+    visible: { opacity: 1, x: 0, transition: { duration: shouldReduceMotion ? 0 : 0.4 } }
+  };
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {

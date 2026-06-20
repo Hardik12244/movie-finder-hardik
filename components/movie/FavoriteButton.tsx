@@ -17,7 +17,21 @@ export function FavoriteButton({ movie, variant = 'card' }: FavoriteButtonProps)
   const { isFavorite, addFavorite, removeFavorite, isHydrated } = useFavorites();
   const { showToast } = useToast();
   
-  if (!isHydrated) return null;
+  if (!isHydrated) {
+    if (variant === 'card') {
+      return (
+        <div className="w-9 h-9 rounded-full bg-[rgba(8,9,12,0.2)] flex items-center justify-center pointer-events-none">
+          <Heart className="w-4 h-4 text-[var(--color-text-primary)] opacity-30" />
+        </div>
+      );
+    }
+    return (
+      <div className="inline-flex items-center justify-center gap-2 px-[var(--space-6)] py-3 rounded-[var(--radius-md)] text-[15px] font-medium bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.05)] text-[var(--color-text-primary)] opacity-50 pointer-events-none">
+        <Heart className="w-5 h-5 fill-transparent" />
+        Add to Favorites
+      </div>
+    );
+  }
 
   const saved = isFavorite(movie.id);
 
@@ -52,7 +66,7 @@ export function FavoriteButton({ movie, variant = 'card' }: FavoriteButtonProps)
         onClick={toggleFavorite}
         className={cn(
           "w-9 h-9 rounded-full flex items-center justify-center transition-colors duration-200 ease-[var(--ease-emphasized)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]",
-          saved ? "bg-[rgba(8,9,12,0.9)] backdrop-blur-md" : "bg-[rgba(8,9,12,0.5)] backdrop-blur-md hover:bg-[rgba(8,9,12,0.8)]"
+          saved ? "bg-[rgba(8,9,12,0.9)] backdrop-blur-md [-webkit-backdrop-filter:blur(12px)]" : "bg-[rgba(8,9,12,0.5)] backdrop-blur-md [-webkit-backdrop-filter:blur(12px)] hover:bg-[rgba(8,9,12,0.8)]"
         )}
         aria-label={saved ? "Remove from favorites" : "Add to favorites"}
       >
