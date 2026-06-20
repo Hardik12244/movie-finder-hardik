@@ -17,14 +17,16 @@ function SearchBarInner() {
   
   const debouncedQuery = useDebounce(query, 400);
   const initialRender = useRef(true);
+  const lastPushedQuery = useRef(initialQuery);
 
+  // Sync state if URL changes externally (e.g., Back/Forward browser navigation)
   useEffect(() => {
     const currentQ = searchParams.get('q') || '';
-    if (currentQ !== debouncedQuery) {
-      // eslint-disable-next-line
+    if (currentQ !== lastPushedQuery.current) {
       setQuery(currentQ);
+      lastPushedQuery.current = currentQ;
     }
-  }, [searchParams, debouncedQuery]);
+  }, [searchParams]);
 
   useEffect(() => {
     if (initialRender.current) {
@@ -32,7 +34,16 @@ function SearchBarInner() {
       return;
     }
 
+    // Avoid pushing if the debounced query is what we already pushed
+    // (prevents infinite loops between multiple SearchBars)
+    if (debouncedQuery === lastPushedQuery.current) {
+      return;
+    }
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsPending(true);
+    lastPushedQuery.current = debouncedQuery;
+
     if (debouncedQuery.trim() !== '') {
       router.push(`/search?q=${encodeURIComponent(debouncedQuery)}&page=1`);
     } else {
@@ -40,12 +51,23 @@ function SearchBarInner() {
         router.push('/');
       }
     }
+    
     const timer = setTimeout(() => setIsPending(false), 300);
     return () => clearTimeout(timer);
   }, [debouncedQuery, router]);
 
   return (
-    <div 
+    <form 
+      onSubmit={(e) => {
+        e.preventDefault();
+        const currentQ = searchParams.get('q') || '';
+        if (query.trim() !== '' && query !== currentQ) {
+          lastPushedQuery.current = query;
+          router.push(`/search?q=${encodeURIComponent(query)}&page=1`);
+        } else if (query.trim() === '' && window.location.pathname === '/search') {
+          router.push('/');
+        }
+      }}
       className={cn(
         "relative flex items-center h-[48px] bg-[var(--color-surface)] border rounded-[var(--radius-md)] px-[var(--space-5)] transition-all duration-150 ease-[var(--ease-standard)] w-full max-w-md",
         isFocused 
@@ -68,7 +90,7 @@ function SearchBarInner() {
         onBlur={() => setIsFocused(false)}
         className="flex-1 bg-transparent text-[15px] text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] outline-none w-full"
       />
-    </div>
+    </form>
   );
 }
 
