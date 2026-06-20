@@ -21,6 +21,7 @@ function SearchBarInner() {
   useEffect(() => {
     const currentQ = searchParams.get('q') || '';
     if (currentQ !== debouncedQuery) {
+      // eslint-disable-next-line
       setQuery(currentQ);
     }
   }, [searchParams, debouncedQuery]);

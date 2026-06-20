@@ -22,8 +22,4 @@ export function getImageUrl(path: string | null, size: 'w92' | 'w154' | 'w185' |
   return `https://image.tmdb.org/t/p/${size}${path}`;
 }
 
-export function useDebounce<T>(value: T, delay: number = 400): T {
-  // We'll implement this as a hook, but wait, this file is lib/utils.ts
-  // It's better to put hooks in hooks/useDebounce.ts
-  throw new Error("useDebounce moved to hooks/useDebounce.ts");
-}
+

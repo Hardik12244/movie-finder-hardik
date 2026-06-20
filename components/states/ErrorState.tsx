@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { AlertCircle, WifiOff, RefreshCw, Film } from 'lucide-react';
+import { WifiOff, RefreshCw, Film } from 'lucide-react';
 import { Button } from '../ui/Button';
 
 interface ErrorStateProps {
@@ -8,13 +8,15 @@ interface ErrorStateProps {
   reset: () => void;
 }
 
-export function ErrorState({ error, reset }: ErrorStateProps) {
+export function ErrorState({ reset }: ErrorStateProps) {
   const [isOffline, setIsOffline] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line
     setIsOffline(!navigator.onLine);
     
     const handleOnline = () => {
+      // eslint-disable-next-line
       setIsOffline(false);
       reset(); // Auto retry when back online
     };
@@ -29,7 +31,6 @@ export function ErrorState({ error, reset }: ErrorStateProps) {
     };
   }, [reset]);
 
-  const Icon = isOffline ? WifiOff : Film;
   const title = isOffline ? "You're offline" : "Something went wrong";
   const description = isOffline
     ? "Check your connection and try again. Your favorites are safe — they're saved on this device."

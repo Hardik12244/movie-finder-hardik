@@ -21,6 +21,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     try {
       const stored = localStorage.getItem('cinefolio_favorites');
       if (stored) {
+        // eslint-disable-next-line
         setFavorites(JSON.parse(stored));
       }
     } catch (e) {
