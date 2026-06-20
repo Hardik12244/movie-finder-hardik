@@ -4,6 +4,7 @@ import { getImageUrl } from '@/lib/utils';
 import { RatingBadge } from '@/components/movie/RatingBadge';
 import { FavoriteButton } from '@/components/movie/FavoriteButton';
 import { Badge } from '@/components/ui/Badge';
+import { Clock, Globe, Activity, Info } from 'lucide-react';
 
 export default async function MovieDetailPage({
   params,
@@ -31,77 +32,97 @@ export default async function MovieDetailPage({
   }
 
   return (
-    <div className="w-full relative min-h-[calc(100vh-72px)] bg-[var(--color-bg)] flex flex-col pb-[var(--space-12)]">
-      {/* Backdrop */}
-      <div className="w-full h-[200px] md:h-[280px] lg:h-[420px] relative">
+    <div className="w-full relative min-h-[calc(100vh-72px)] bg-[var(--color-bg)] flex flex-col pb-[var(--space-16)]">
+      {/* Immersive Backdrop */}
+      <div className="w-full h-[40vh] md:h-[55vh] lg:h-[70vh] relative">
         <Image
           src={getImageUrl(movie.backdropPath, 'w1280')}
           alt={`${movie.title} backdrop`}
           fill
           priority
-          className="object-cover object-top"
+          className="object-cover object-top opacity-50 md:opacity-80 mix-blend-lighten"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[rgba(8,9,12,0.2)] to-[var(--color-bg)]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#08090C] via-[rgba(8,9,12,0.85)] to-transparent w-[100%] md:w-[70%]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#08090C] via-[rgba(8,9,12,0.3)] to-transparent top-[40%]" />
       </div>
 
-      <div className="max-w-[1440px] mx-auto w-full px-[var(--space-4)] lg:px-[var(--space-8)] -mt-[var(--space-8)] md:-mt-[var(--space-12)] lg:-mt-[var(--space-16)] relative z-10">
-        <div className="flex flex-col md:flex-row gap-[var(--space-6)] lg:gap-[var(--space-8)]">
-          {/* Poster */}
-          <div className="shrink-0 mx-auto md:mx-0">
-            <div className="relative w-[140px] h-[210px] md:w-[180px] md:h-[270px] lg:w-[240px] lg:h-[360px] rounded-[var(--radius-card)] overflow-hidden shadow-[var(--shadow-lg)] border-[4px] border-[var(--color-surface-elevated)]">
+      <div className="max-w-[1440px] mx-auto w-full px-[var(--space-4)] md:px-[var(--space-8)] lg:px-[var(--space-12)] -mt-[20vh] md:-mt-[35vh] lg:-mt-[45vh] relative z-10">
+        <div className="flex flex-col md:flex-row gap-[var(--space-8)] lg:gap-[var(--space-16)]">
+          {/* Poster Column */}
+          <div className="shrink-0 mx-auto md:mx-0 w-[180px] md:w-[280px] lg:w-[360px]">
+            <div className="relative aspect-[2/3] w-full rounded-[var(--radius-xl)] overflow-hidden shadow-[0_32px_64px_rgba(0,0,0,0.7)] border-[4px] border-[rgba(255,255,255,0.05)] bg-[var(--color-surface-elevated)]">
               <Image
                 src={getImageUrl(movie.posterPath, 'w500')}
                 alt={movie.title}
                 fill
                 priority
                 className="object-cover"
-                sizes="(max-width: 768px) 140px, (max-width: 1024px) 180px, 240px"
+                sizes="(max-width: 768px) 180px, (max-width: 1024px) 280px, 360px"
               />
+            </div>
+            
+            <div className="mt-[var(--space-6)] hidden md:block">
+              <FavoriteButton movie={movie} variant="detail" />
             </div>
           </div>
 
-          {/* Content */}
-          <div className="flex flex-col flex-1 pt-0 md:pt-[var(--space-12)] lg:pt-[var(--space-16)] items-center md:items-start text-center md:text-left">
-            <h1 className="text-[28px] md:text-[36px] font-bold leading-[1.2] tracking-[-0.015em] text-[var(--color-text-primary)] mb-[var(--space-2)]">
+          {/* Content Column */}
+          <div className="flex flex-col flex-1 pt-0 md:pt-[var(--space-12)] items-center md:items-start text-center md:text-left">
+            <h1 className="text-[40px] md:text-[56px] lg:text-[72px] font-bold leading-[1.05] tracking-[-0.02em] text-[var(--color-text-primary)] mb-[var(--space-2)] drop-shadow-2xl">
               {movie.title}
             </h1>
             
-            <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 text-[13px] text-[var(--color-text-secondary)] mb-[var(--space-4)]">
-              <span>{movie.releaseYear || 'Unknown'}</span>
-              {movie.runtime > 0 && (
-                <>
-                  <span>•</span>
-                  <span>{movie.runtime} min</span>
-                </>
-              )}
-              {movie.genres && movie.genres.length > 0 && (
-                <>
-                  <span>•</span>
-                  <div className="flex gap-2 flex-wrap justify-center md:justify-start">
-                    {movie.genres.map(g => (
-                      <Badge key={g.id} variant="genre">{g.name}</Badge>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
-
-            <div className="flex flex-col md:flex-row items-center md:items-end w-full max-w-[680px] gap-[var(--space-4)] mb-[var(--space-8)]">
+            {movie.tagline && (
+              <h2 className="text-[18px] md:text-[24px] font-medium text-[var(--color-text-secondary)] italic mb-[var(--space-6)] max-w-[800px] opacity-80">
+                &ldquo;{movie.tagline}&rdquo;
+              </h2>
+            )}
+            
+            <div className="flex flex-col lg:flex-row lg:items-center justify-center md:justify-start gap-[var(--space-6)] lg:gap-[var(--space-8)] mb-[var(--space-8)] w-full">
               <RatingBadge rating={movie.rating} size="lg" voteCount={movie.voteCount} />
               
-              <div className="md:ml-auto w-full sm:w-auto mt-4 md:mt-0">
-                <div className="w-full sm:w-auto flex justify-center md:justify-end">
-                  <FavoriteButton movie={movie} variant="detail" />
+              <div className="hidden lg:block w-[1px] h-[48px] bg-[rgba(255,255,255,0.1)]" />
+              
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 lg:gap-6 text-[15px] font-medium text-[var(--color-text-secondary)]">
+                <div className="flex flex-col items-center lg:items-start gap-1">
+                  <span className="text-[12px] uppercase tracking-wider text-[var(--color-text-muted)] flex items-center gap-1"><Clock className="w-3 h-3" /> Runtime</span>
+                  <span className="text-[var(--color-text-primary)]">{movie.runtime > 0 ? `${movie.runtime} min` : 'Unknown'}</span>
+                </div>
+                <div className="flex flex-col items-center lg:items-start gap-1">
+                  <span className="text-[12px] uppercase tracking-wider text-[var(--color-text-muted)] flex items-center gap-1"><Globe className="w-3 h-3" /> Language</span>
+                  <span className="text-[var(--color-text-primary)] uppercase">{movie.originalLanguage || 'EN'}</span>
+                </div>
+                <div className="flex flex-col items-center lg:items-start gap-1">
+                  <span className="text-[12px] uppercase tracking-wider text-[var(--color-text-muted)] flex items-center gap-1"><Activity className="w-3 h-3" /> Popularity</span>
+                  <span className="text-[var(--color-text-primary)]">{movie.popularity ? Math.round(movie.popularity) : 'N/A'}</span>
+                </div>
+                <div className="flex flex-col items-center lg:items-start gap-1">
+                  <span className="text-[12px] uppercase tracking-wider text-[var(--color-text-muted)] flex items-center gap-1"><Info className="w-3 h-3" /> Status</span>
+                  <span className="text-[var(--color-text-primary)]">{movie.status || 'Released'}</span>
                 </div>
               </div>
             </div>
 
-            <div className="w-full max-w-[680px]">
-              <h3 className="text-[20px] font-semibold text-[var(--color-text-primary)] mb-[var(--space-2)]">
+            <div className="md:hidden w-full mb-[var(--space-8)] flex justify-center">
+              <FavoriteButton movie={movie} variant="detail" />
+            </div>
+
+            {movie.genres && movie.genres.length > 0 && (
+              <div className="flex gap-2 flex-wrap justify-center md:justify-start mb-[var(--space-10)]">
+                {movie.genres.map(g => (
+                  <Badge key={g.id} variant="genre" className="px-4 py-2 text-[14px] bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)] transition-colors">
+                    {g.name}
+                  </Badge>
+                ))}
+              </div>
+            )}
+
+            <div className="w-full max-w-[800px] bg-[rgba(26,27,32,0.6)] backdrop-blur-xl border border-[rgba(255,255,255,0.05)] rounded-[var(--radius-xl)] p-[var(--space-6)] md:p-[var(--space-8)] shadow-[0_16px_40px_rgba(0,0,0,0.3)]">
+              <h3 className="text-[20px] font-semibold text-[var(--color-text-primary)] mb-[var(--space-4)]">
                 Overview
               </h3>
-              <p className="text-[15px] leading-[1.6] text-[var(--color-text-primary)]">
+              <p className="text-[16px] md:text-[18px] leading-[1.8] text-[rgba(245,245,247,0.85)]">
                 {movie.overview || 'No overview available for this movie.'}
               </p>
             </div>

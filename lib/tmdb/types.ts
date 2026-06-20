@@ -13,6 +13,10 @@ export interface TMDBMovie {
 export interface TMDBMovieDetail extends TMDBMovie {
   runtime: number;
   genres: { id: number; name: string }[];
+  tagline: string;
+  status: string;
+  original_language: string;
+  popularity: number;
 }
 
 export interface TMDBResponse<T> {
@@ -38,6 +42,10 @@ export interface Movie {
 export interface MovieDetail extends Movie {
   runtime: number;
   genres: { id: number; name: string }[];
+  tagline: string;
+  status: string;
+  originalLanguage: string;
+  popularity: number;
 }
 
 export interface PaginatedMovies {

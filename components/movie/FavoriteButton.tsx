@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Heart } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useFavorites } from '@/context/FavoritesContext';
 import { useToast } from '@/context/ToastContext';
 import { Movie } from '@/lib/tmdb/types';
@@ -45,43 +46,60 @@ export function FavoriteButton({ movie, variant = 'card' }: FavoriteButtonProps)
 
   if (variant === 'card') {
     return (
-      <button
+      <motion.button
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
         onClick={toggleFavorite}
         className={cn(
-          "absolute top-[var(--space-2)] right-[var(--space-2)] w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 ease-[var(--ease-emphasized)] hover:scale-110",
-          saved ? "bg-[rgba(8,9,12,0.8)] backdrop-blur-md" : "bg-[rgba(8,9,12,0.6)] backdrop-blur-md hover:bg-[rgba(8,9,12,0.8)]"
+          "w-9 h-9 rounded-full flex items-center justify-center transition-colors duration-200 ease-[var(--ease-emphasized)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]",
+          saved ? "bg-[rgba(8,9,12,0.9)] backdrop-blur-md" : "bg-[rgba(8,9,12,0.5)] backdrop-blur-md hover:bg-[rgba(8,9,12,0.8)]"
         )}
         aria-label={saved ? "Remove from favorites" : "Add to favorites"}
       >
-        <Heart 
-          className={cn(
-            "w-4 h-4 transition-all duration-200 ease-[var(--ease-emphasized)]",
-            saved 
-              ? "text-[var(--color-accent)] fill-[var(--color-accent)] scale-110" 
-              : "text-[var(--color-text-primary)] opacity-60 fill-transparent hover:opacity-100"
-          )} 
-        />
-      </button>
+        <motion.div
+          initial={false}
+          animate={{ scale: saved ? [1, 1.3, 1] : 1 }}
+          transition={{ duration: 0.4 }}
+        >
+          <Heart 
+            className={cn(
+              "w-4 h-4 transition-all duration-200 ease-[var(--ease-emphasized)]",
+              saved 
+                ? "text-[var(--color-accent)] fill-[var(--color-accent)]" 
+                : "text-[var(--color-text-primary)] opacity-60 fill-transparent hover:opacity-100"
+            )} 
+          />
+        </motion.div>
+      </motion.button>
     );
   }
 
   return (
-    <button
+    <motion.button
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.95 }}
       onClick={toggleFavorite}
       className={cn(
-        "inline-flex items-center justify-center gap-2 px-[var(--space-5)] py-2.5 rounded-[var(--radius-md)] text-[15px] font-medium transition-all duration-200 ease-[var(--ease-emphasized)] active:scale-95",
+        "inline-flex items-center justify-center gap-2 px-[var(--space-6)] py-3 rounded-[var(--radius-md)] text-[15px] font-medium transition-colors duration-200 ease-[var(--ease-emphasized)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]",
         saved
           ? "bg-[rgba(242,193,78,0.12)] border border-[var(--color-accent)] text-[var(--color-accent)]"
-          : "bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-primary)] hover:bg-[var(--color-surface-elevated)]"
+          : "bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)] border border-[rgba(255,255,255,0.1)] text-[var(--color-text-primary)]"
       )}
+      aria-label={saved ? "Remove from favorites" : "Add to favorites"}
     >
-      <Heart 
-        className={cn(
-          "w-5 h-5 transition-all duration-200",
-          saved ? "fill-[var(--color-accent)] text-[var(--color-accent)] scale-110" : "fill-transparent text-[var(--color-text-primary)]"
-        )} 
-      />
+      <motion.div
+        initial={false}
+        animate={{ scale: saved ? [1, 1.3, 1] : 1 }}
+        transition={{ duration: 0.4 }}
+      >
+        <Heart 
+          className={cn(
+            "w-5 h-5 transition-all duration-200",
+            saved ? "fill-[var(--color-accent)] text-[var(--color-accent)]" : "fill-transparent text-[var(--color-text-primary)]"
+          )} 
+        />
+      </motion.div>
       {saved ? "Saved to Favorites" : "Add to Favorites"}
-    </button>
+    </motion.button>
   );
 }

@@ -69,5 +69,9 @@ export async function getMovieById(id: string | number): Promise<MovieDetail> {
     ...normalizeMovie(data),
     runtime: data.runtime,
     genres: data.genres,
+    tagline: data.tagline,
+    status: data.status,
+    originalLanguage: data.original_language,
+    popularity: data.popularity,
   };
 }

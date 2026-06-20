@@ -1,4 +1,7 @@
+'use client';
+
 import React from 'react';
+import { motion } from 'framer-motion';
 import { Movie } from '@/lib/tmdb/types';
 import { MovieCard } from './MovieCard';
 import { MovieCardSkeleton } from './MovieCardSkeleton';
@@ -8,22 +11,42 @@ interface MovieGridProps {
   isLoading?: boolean;
 }
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } }
+};
+
 export function MovieGrid({ movies = [], isLoading = false }: MovieGridProps) {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-[var(--space-4)] md:gap-[var(--space-6)] w-full">
+    <motion.div 
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-[var(--space-4)] md:gap-[var(--space-6)] w-full"
+    >
       {isLoading ? (
         Array.from({ length: 12 }).map((_, i) => (
-          <div key={`skeleton-${i}`} className="animate-in fade-in duration-200" style={{ animationDelay: `${i * 30}ms` }}>
+          <motion.div key={`skeleton-${i}`} variants={itemVariants} className="h-full">
             <MovieCardSkeleton />
-          </div>
+          </motion.div>
         ))
       ) : (
-        movies.map((movie, i) => (
-          <div key={movie.id} className="animate-in fade-in slide-in-from-bottom-2 duration-200" style={{ animationDelay: `${Math.min(i, 5) * 30}ms` }}>
+        movies.map((movie) => (
+          <motion.div key={movie.id} variants={itemVariants} className="h-full">
             <MovieCard movie={movie} />
-          </div>
+          </motion.div>
         ))
       )}
-    </div>
+    </motion.div>
   );
 }
