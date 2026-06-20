@@ -73,5 +73,43 @@ export async function getMovieById(id: string | number): Promise<MovieDetail> {
     status: data.status,
     originalLanguage: data.original_language,
     popularity: data.popularity,
+    budget: data.budget || 0,
+    revenue: data.revenue || 0,
+    productionCompanies: data.production_companies?.map(c => ({
+      id: c.id,
+      name: c.name,
+      logoPath: c.logo_path,
+      originCountry: c.origin_country,
+    })) || [],
   };
+}
+
+export async function getTrendingMovies(timeWindow: 'day' | 'week' = 'week', page: number = 1): Promise<PaginatedMovies> {
+  return getMergedAppPage((tmdbPage) => {
+    return fetchTMDB<TMDBResponse<TMDBMovie>>(`/trending/movie/${timeWindow}?page=${tmdbPage}`);
+  }, page);
+}
+
+export async function getTopRatedMovies(page: number = 1): Promise<PaginatedMovies> {
+  return getMergedAppPage((tmdbPage) => {
+    return fetchTMDB<TMDBResponse<TMDBMovie>>(`/movie/top_rated?page=${tmdbPage}`);
+  }, page);
+}
+
+export async function getSimilarMovies(id: string | number, page: number = 1): Promise<PaginatedMovies> {
+  return getMergedAppPage((tmdbPage) => {
+    return fetchTMDB<TMDBResponse<TMDBMovie>>(`/movie/${id}/similar?page=${tmdbPage}`);
+  }, page);
+}
+
+export async function getRecommendedMovies(id: string | number, page: number = 1): Promise<PaginatedMovies> {
+  return getMergedAppPage((tmdbPage) => {
+    return fetchTMDB<TMDBResponse<TMDBMovie>>(`/movie/${id}/recommendations?page=${tmdbPage}`);
+  }, page);
+}
+
+export async function getMoviesByGenre(genreId: string | number, page: number = 1): Promise<PaginatedMovies> {
+  return getMergedAppPage((tmdbPage) => {
+    return fetchTMDB<TMDBResponse<TMDBMovie>>(`/discover/movie?with_genres=${genreId}&sort_by=popularity.desc&page=${tmdbPage}`);
+  }, page);
 }

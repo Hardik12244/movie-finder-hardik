@@ -39,5 +39,6 @@ export function normalizeMovie(movie: TMDBMovie): Movie {
     voteCount: movie.vote_count,
     overview: movie.overview,
     genreIds: movie.genre_ids,
+    popularity: movie.popularity,
   };
 }

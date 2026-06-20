@@ -1,30 +1,46 @@
-# AI Tooling & Development Log
+# CineFolio AI Engineering Log
 
-This document serves as the official record of artificial intelligence tooling used during the construction of **CineFolio**.
+## Product Transformation Journey
+**Date:** June 20, 2026
+**Shift:** From "Movie Browser" to "Movie Discovery Platform"
 
-## Tools Used
-- **Antigravity AI (Google DeepMind):** Primary Pair-Programming Agent and Principal Architect. Used for continuous context-aware code generation, visual design system creation, build verification, and automated terminal tasks.
-- **Claude / Gemini (Internal Model Engine):** Served as the brain behind the Antigravity agent, driving logic for TMDB pagination algorithms and React Hook architecture.
-- **Framer Motion:** (Library, non-AI) Used extensively to achieve the premium interactive motion specs requested during the Phase 5 polish sprint.
+### Architectural Decisions
 
-## Most Useful Prompts
+1. **Discovery Platform Transition**
+   * **Challenge:** The initial application was a standard assignment implementation (a simple paginated grid). It lacked retention mechanics.
+   * **Solution:** Overhauled the homepage into multiple horizontal discovery rows using `framer-motion` for snapping carousels (`Trending This Week`, `Top Rated Movies`).
+   * **Tradeoff:** Added more API endpoints and layout complexity, but the massive UX improvement justifies the minimal overhead.
 
-The following prompts dictated the core architectural breakthroughs:
+2. **Search Loop Remediation**
+   * **Challenge:** Next.js asynchronous `router.push` and App Router's soft navigation caused an infinite loop between Desktop and Mobile `SearchBar` components via the shared `useSearchParams`.
+   * **Solution:** Decoupled the push effect from `searchParams`. Pushes are now *exclusively* driven by the `debouncedQuery` changing, and we verify `debouncedQuery !== lastPushedQuery.current` before pushing. 
 
-1. **The 12-Item Normalization Prompt:** 
-   > *"TMDB returns 20 items per page, but the assignment strictly requires exactly 12. Build a `getMergedAppPage` function that maps application-level pages (12 items) to TMDB pages (20 items), fetching two pages concurrently when an overlap occurs, and returning an exact 12-item slice without losing data."*
-   **Impact:** Solved the hardest assignment constraint elegantly on the server side without relying on complex client-side slicing.
+3. **Client/Server Component Strategy for Favorites**
+   * **Challenge:** The Favorites page needed "Trending Alternatives" for empty states, but the page was a "use client" component due to Context usage.
+   * **Solution:** Converted `app/favorites/page.tsx` back to a Server Component to fetch TMDB data securely, and pushed the Context/Storage logic down into a new `FavoritesClient.tsx` child component.
 
-2. **The Premium Redesign Prompt:** 
-   > *"You are a Principal Product Engineer, Senior UX Designer, Frontend Architect... Your mission is to transform the current implementation into a product that immediately stands out against other internship submissions. Focus on making the existing implementation production-ready and assignment-ready without unnecessary abstractions."*
-   **Impact:** Triggered the 14-Phase UX sprint that brought in `framer-motion`, deeply immersive cinematic gradients, expanded TMDB metadata parsing (taglines, status, runtime), and highly accessible focus states.
+### Product Decisions
 
-## What I Fixed Manually (Human/Agent Interventions)
-During the automated AI build loops, several critical interventions were required to ensure production quality:
-- **Linting Rules for React Hooks:** Next.js 15 template is strictly enforcing `react-hooks/set-state-in-effect`. AI blindly generated hydration sync logic (`setIsOffline(!navigator.onLine)` inside `useEffect`), which triggered the build to fail. Manually inserted `// eslint-disable-next-line` where synchronous state setup inside effects was legitimately required for browser APIs.
-- **Next.js Suspense Boundaries bailout:** `useSearchParams()` triggered static bailouts in the 404 and layout trees during `npm run build`. Manually refactored `SearchBar.tsx` and `Pagination.tsx` to wrap the `useSearchParams` hook usage tightly inside `<Suspense>` boundaries.
-- **Opacity Wrapping in MovieCards:** Initial AI implementation wrapped `FavoriteButton` inside an `opacity-0` container to hide it when not hovered. Manually corrected this to ensure favorited items remained visible (so users know what they've saved without hovering). 
+1. **Search Gamification**
+   * Added `localStorage` tracking for recent searches to reduce friction.
+   * Added a `/` global keyboard shortcut to auto-focus the search bar, a staple of premium SaaS products.
 
----
+2. **Continuity & Retention**
+   * Created a `RecentlyViewedTracker` that caches the last 10 visited movies locally.
+   * Displayed the "Recently Viewed" carousel on the homepage to create immediate continuity when users return to the app.
+   * Solved the "dead end" problem on the Detail page by fetching and rendering `Similar Movies` and `Because You Liked This` (Recommendations).
 
-*This log certifies the deliberate, managed, and architecturally sound use of AI systems to build CineFolio.*
+3. **Analytics Gamification**
+   * Upgraded the Favorites section from a simple grid into an analytics dashboard computing "Average Rating", "Favorite Genre", and "Movies Saved" purely on the client side. 
+
+### Manual Fixes
+* **Linting Hooks:** Strictly silenced `react-hooks/set-state-in-effect` during hydration steps in custom hooks where synchronous setting is required to map `localStorage` to state during initial mount.
+* **HTML Validation:** Fixed an unclosed `</div>` tag that was converted to a `<form>` without its corresponding closing tag in `SearchBar.tsx`.
+
+## Final Tech Stack
+* Next.js 15 (App Router)
+* TypeScript
+* Tailwind CSS (Vanilla utilities, no components library)
+* Framer Motion (Micro-interactions and carousels)
+* Lucide React (Icons)
+* TMDB API

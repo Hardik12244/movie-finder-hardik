@@ -1,63 +1,42 @@
-# CineFolio
+# CineFolio: Movie Discovery Platform
 
-<div align="center">
-  <img src="public/fallback-poster.svg" alt="CineFolio Hero" width="200" height="300" style="border-radius: 12px; margin: 24px 0;" />
-  <p><strong>A premium movie discovery tool. Built for Jeevan — Hardik Garg.</strong></p>
-</div>
+CineFolio is a premium, consumer-grade movie discovery platform built with Next.js 15, React 19, and Tailwind CSS. Originally an internship assignment, the project has been fully transformed into an immersive cinematic experience heavily inspired by platforms like Netflix and Letterboxd.
 
-## Project Overview
+## Features
 
-CineFolio is an elegant, immersive, and fast movie discovery application. Built as an internship submission, it exceeds standard functional requirements by introducing a streaming-platform-grade UX featuring cinematic gradients, buttery-smooth Framer Motion interactions, and robust error/loading state management.
+- **Immersive Discovery:** Discover movies through interactive carousels (Trending, Top Rated) and Genre filtering directly on the homepage.
+- **Deep Cinematic UI:** Features parallax hero sections, dynamic glassmorphism metadata cards, and `framer-motion` staggered grid animations.
+- **Flawless Search & History:** Lightning-fast, debounced search that auto-syncs with the URL to support native browser navigation. Features LocalStorage gamification with "Recent Searches" and `/` keyboard shortcuts.
+- **Personalized Analytics:** The Favorites page acts as a local analytics dashboard, computing your Average Rating, Top Genre, and Total Saved movies on the client side without needing a backend.
+- **Endless Exploration:** The Movie Details page features detailed TMDB metrics (Budget, Revenue, Production Studios) and provides "Similar Movies" and "Because You Liked This" recommendations to prevent dead-ends.
+- **Smart Continuity:** A "Recently Viewed" engine caches your history locally, creating seamless transition states between pages.
 
-## Key Features
-- **Premium Discovery:** Browse popular movies through a highly polished UI with dynamic backdrop immersion.
-- **Instant Search:** Debounced, accessible search bar that seamlessly routes and fetches via the TMDB API.
-- **Favorites Persistence:** Client-side local storage safely hydrated to prevent React SSR mismatch errors.
-- **Strict 12-Item Pagination:** Custom mathematical slicing of TMDB's 20-item pages ensures exactly 12 items are rendered per page to strictly comply with the assignment parameters.
-- **Immersive Details:** Rich metadata parsing including runtime, localized genres, vote counts, popularity metrics, and tagline presentation.
+## Architecture & Technical Decisions
 
-## Tech Stack
-- **Framework:** Next.js 15 (App Router, Server Components)
-- **Language:** TypeScript (Strict Mode)
-- **Styling:** Tailwind CSS (Custom Base Tokens, no default palettes)
-- **Animation:** Framer Motion
-- **Icons:** Lucide React
-- **API:** TMDB (The Movie Database)
+- **Framework:** Next.js 15 (App Router)
+- **Styling:** Vanilla Tailwind CSS with custom CSS variables for effortless dark-mode UI tokens.
+- **State Management:** React Context API for global state (Favorites) with robust client-side `localStorage` hydration to prevent SSR mismatches.
+- **Data Fetching:** Parallelized Server Components fetching from the TMDB API to eliminate client-side waterfalls. Custom caching and deduplication where necessary.
+- **Animations:** Framer Motion for complex staggered entrance animations, layout ID morphing (Genre chips), and parallax scroll bindings.
+- **Search Logic:** Decoupled the URL syncing from the local controlled input state using `lastPushedQuery` refs to guarantee zero flickering or race conditions during rapid typing.
 
-## Architecture Notes
-- **Suspense Boundaries:** Critical client components utilizing `useSearchParams` are deeply wrapped in `<Suspense>` to ensure the Next.js static builder can aggressively optimize the rest of the application.
-- **Data Normalization:** Raw TMDB types are mapped heavily via `normalizeMovie` to isolate the UI components from external schema changes.
+## TMDB Pagination
 
-## Running Locally
+The application implements a custom pagination adapter. TMDB endpoints natively return 20 results per page. However, the assignment demands strictly 12 movies per page. To satisfy this requirement, the `getMergedAppPage` function transparently intercepts App Pages and maps them across the bounds of TMDB Pages, firing parallel requests when a 12-item slice spans across two different TMDB pages.
 
-### 1. Installation
-Clone the repository and install dependencies:
-```bash
-npm install
-```
+## AI Usage
 
-### 2. Environment Variables
-You will need a valid TMDB API key. Create a `.env.local` file at the root:
-```env
-NEXT_PUBLIC_TMDB_API_KEY=your_api_key_here
-```
+This application was heavily refined and built using Advanced Agentic Coding methodologies.
+For a detailed architectural breakdown of the AI's product decisions and bug fixes, please read `AI_LOG.md`.
 
-### 3. Start Development Server
-```bash
-npm run dev
-```
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+## Installation & Running Locally
 
-## Assignment Compliance
-- [x] Next.js
-- [x] TMDB Integration
-- [x] Browse, Search, Favorites
-- [x] Exact 12 items per page manually paginated
-- [x] Standard `/movie/[id]` route structure
-- [x] Footer text exact match
-- [x] Strict visual token matching
+1. Clone the repository.
+2. Run `npm install` to install dependencies.
+3. Create a `.env.local` file and add your TMDB API Key:
+   `NEXT_PUBLIC_TMDB_API_KEY=your_key_here`
+4. Run `npm run dev` to start the development server on `localhost:3000`.
 
-## Future Improvements
-- **Internationalization (i18n):** Allowing users to swap languages.
-- **Trailer Support:** Integrating YouTube iframes fetched from TMDB's video endpoints.
-- **Authentication:** Migrating from localStorage to a robust database (e.g. Supabase) for cross-device favorites sync.
+## Production Readiness
+
+This project passes all Next.js 15 strict linting (`react-hooks/exhaustive-deps`, `react-hooks/set-state-in-effect`) and builds cleanly with Turbopack optimizations. It is fully responsive across mobile, tablet, and desktop viewports, with robust touch-target support for horizontal carousels.

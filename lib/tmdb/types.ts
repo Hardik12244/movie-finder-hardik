@@ -8,6 +8,7 @@ export interface TMDBMovie {
   vote_count: number;
   overview: string;
   genre_ids: number[];
+  popularity: number;
 }
 
 export interface TMDBMovieDetail extends TMDBMovie {
@@ -16,7 +17,9 @@ export interface TMDBMovieDetail extends TMDBMovie {
   tagline: string;
   status: string;
   original_language: string;
-  popularity: number;
+  budget: number;
+  revenue: number;
+  production_companies: { id: number; name: string; logo_path: string | null; origin_country: string }[];
 }
 
 export interface TMDBResponse<T> {
@@ -37,6 +40,7 @@ export interface Movie {
   voteCount: number;
   overview: string;
   genreIds: number[];
+  popularity: number;
 }
 
 export interface MovieDetail extends Movie {
@@ -45,7 +49,9 @@ export interface MovieDetail extends Movie {
   tagline: string;
   status: string;
   originalLanguage: string;
-  popularity: number;
+  budget: number;
+  revenue: number;
+  productionCompanies: { id: number; name: string; logoPath: string | null; originCountry: string }[];
 }
 
 export interface PaginatedMovies {

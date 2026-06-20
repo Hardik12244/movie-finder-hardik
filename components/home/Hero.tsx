@@ -3,11 +3,12 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { Movie } from '@/lib/tmdb/types';
 import { getImageUrl, GENRE_MAP } from '@/lib/utils';
 import { RatingBadge } from '../movie/RatingBadge';
 import { Button } from '../ui/Button';
+import { Trophy, Clock } from 'lucide-react';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -29,7 +30,17 @@ const itemVariants = {
   }
 };
 
-export function Hero({ movie }: { movie: Movie }) {
+interface HeroProps {
+  movie: Movie;
+  rank?: number;
+  isTrending?: boolean;
+}
+
+export function Hero({ movie, rank, isTrending }: HeroProps) {
+  const { scrollY } = useScroll();
+  const yParallax = useTransform(scrollY, [0, 500], [0, 150]);
+  const opacityFade = useTransform(scrollY, [0, 300], [1, 0.3]);
+
   if (!movie) return null;
 
   const genres = movie.genreIds
@@ -38,8 +49,11 @@ export function Hero({ movie }: { movie: Movie }) {
     .slice(0, 3) || ['Movie'];
 
   return (
-    <div className="relative w-full min-h-[75vh] flex items-center overflow-hidden">
-      <div className="absolute inset-0 z-0">
+    <div className="relative w-full min-h-[75vh] flex items-center overflow-hidden bg-[#08090C]">
+      <motion.div 
+        style={{ y: yParallax, opacity: opacityFade }}
+        className="absolute inset-0 z-0"
+      >
         <motion.div 
           initial={{ scale: 1.05, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -60,7 +74,7 @@ export function Hero({ movie }: { movie: Movie }) {
         <div className="absolute inset-0 bg-gradient-to-r from-[rgba(8,9,12,1)] via-[rgba(8,9,12,0.85)] to-transparent w-[100%] md:w-[75%]" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#08090C] via-[rgba(8,9,12,0.3)] to-transparent top-[60%]" />
         <div className="absolute inset-0 bg-[rgba(8,9,12,0.15)]" />
-      </div>
+      </motion.div>
 
       <div className="relative z-10 max-w-[1440px] mx-auto w-full px-[var(--space-4)] md:px-[var(--space-6)] lg:px-[var(--space-12)] py-[var(--space-12)]">
         <motion.div 
@@ -69,10 +83,18 @@ export function Hero({ movie }: { movie: Movie }) {
           animate="visible"
           className="flex flex-col w-full md:w-[70%] lg:w-[60%]"
         >
-          <motion.div variants={itemVariants} className="mb-[var(--space-4)]">
-            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[rgba(124,92,252,0.15)] border border-[rgba(124,92,252,0.3)] text-[12px] font-bold tracking-[0.08em] text-[var(--color-primary)] uppercase">
-              Now Trending
-            </span>
+          <motion.div variants={itemVariants} className="mb-[var(--space-4)] flex items-center gap-3">
+            {isTrending && rank && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500/20 to-orange-600/20 border border-amber-500/30 text-[12px] font-bold tracking-[0.08em] text-amber-500 uppercase shadow-[0_0_15px_rgba(245,158,11,0.2)]">
+                <Trophy className="w-3.5 h-3.5" />
+                #{rank} Trending
+              </span>
+            )}
+            {!isTrending && (
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[rgba(124,92,252,0.15)] border border-[rgba(124,92,252,0.3)] text-[12px] font-bold tracking-[0.08em] text-[var(--color-primary)] uppercase">
+                Featured
+              </span>
+            )}
           </motion.div>
           
           <motion.h1 
@@ -86,9 +108,14 @@ export function Hero({ movie }: { movie: Movie }) {
             variants={itemVariants}
             className="flex flex-wrap items-center gap-[var(--space-4)] text-[14px] font-medium text-[var(--color-text-secondary)] mb-[var(--space-6)]"
           >
-            <RatingBadge rating={movie.rating} />
+            <RatingBadge rating={movie.rating} voteCount={movie.voteCount} />
             <span className="opacity-50">•</span>
             <span>{movie.releaseYear || 'Unknown'}</span>
+            <span className="opacity-50">•</span>
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4 text-[var(--color-text-muted)]" />
+              <span>{movie.popularity ? Math.round(movie.popularity) : 'Pop'} Score</span>
+            </div>
             <span className="opacity-50">•</span>
             <div className="flex gap-2">
               {genres.map((genre, idx) => (
@@ -109,8 +136,12 @@ export function Hero({ movie }: { movie: Movie }) {
           
           <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-[var(--space-4)]">
             <Link href={`/movie/${movie.id}`} passHref legacyBehavior>
-              <Button variant="primary" size="lg" className="w-full sm:w-auto px-[var(--space-8)] shadow-[0_4px_24px_rgba(124,92,252,0.4)] hover:shadow-[0_6px_32px_rgba(124,92,252,0.6)]">
-                View Details
+              <Button variant="primary" size="lg" className="w-full sm:w-auto px-[var(--space-8)] shadow-[0_4px_24px_rgba(124,92,252,0.4)] hover:shadow-[0_6px_32px_rgba(124,92,252,0.6)] group">
+                <span className="relative z-10 flex items-center gap-2">
+                  View Details
+                </span>
+                {/* Subtle glowing effect */}
+                <div className="absolute inset-0 rounded-[var(--radius-md)] bg-[var(--color-primary)] opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500" />
               </Button>
             </Link>
             <Button 
