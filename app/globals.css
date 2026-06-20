@@ -1,26 +1,121 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary: var(--color-primary-val);
+  --color-secondary: var(--color-secondary-val);
+  --color-accent: var(--color-accent-val);
+  --color-bg: var(--color-bg-val);
+  --color-surface: var(--color-surface-val);
+  --color-surface-elevated: var(--color-surface-elevated-val);
+  --color-border: var(--color-border-val);
+  --color-success: var(--color-success-val);
+  --color-warning: var(--color-warning-val);
+  --color-error: var(--color-error-val);
+  --color-text-primary: var(--color-text-primary-val);
+  --color-text-secondary: var(--color-text-secondary-val);
+  --color-text-muted: var(--color-text-muted-val);
+
+  --spacing-space-1: var(--space-1);
+  --spacing-space-2: var(--space-2);
+  --spacing-space-3: var(--space-3);
+  --spacing-space-4: var(--space-4);
+  --spacing-space-5: var(--space-5);
+  --spacing-space-6: var(--space-6);
+  --spacing-space-8: var(--space-8);
+  --spacing-space-10: var(--space-10);
+  --spacing-space-12: var(--space-12);
+  --spacing-space-16: var(--space-16);
+  --spacing-space-20: var(--space-20);
+  --spacing-space-24: var(--space-24);
+
+  --radius-sm: var(--radius-sm-val);
+  --radius-md: var(--radius-md-val);
+  --radius-lg: var(--radius-lg-val);
+  --radius-xl: var(--radius-xl-val);
+  --radius-card: var(--radius-card-val);
+  --radius-modal: var(--radius-modal-val);
+
+  --shadow-sm: var(--shadow-sm-val);
+  --shadow-md: var(--shadow-md-val);
+  --shadow-lg: var(--shadow-lg-val);
+  --shadow-elevated: var(--shadow-elevated-val);
+  --shadow-modal: var(--shadow-modal-val);
+
+  --ease-standard: var(--ease-standard-val);
+  --ease-emphasized: var(--ease-emphasized-val);
+  
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-primary-val: #7C5CFC;
+  --color-secondary-val: #2DD4BF;
+  --color-accent-val: #F2C14E;
+  --color-bg-val: #08090C;
+  --color-surface-val: #121317;
+  --color-surface-elevated-val: #1A1B20;
+  --color-border-val: #26272D;
+  --color-success-val: #3DD68C;
+  --color-warning-val: #F2A33D;
+  --color-error-val: #F2545B;
+  --color-text-primary-val: #F5F5F7;
+  --color-text-secondary-val: #A8A8B3;
+  --color-text-muted-val: #6B6B76;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  --radius-sm-val: 6px;
+  --radius-md-val: 10px;
+  --radius-lg-val: 16px;
+  --radius-xl-val: 24px;
+  --radius-card-val: 12px;
+  --radius-modal-val: 20px;
+
+  --shadow-sm-val: 0 1px 2px rgba(0,0,0,0.4);
+  --shadow-md-val: 0 4px 12px rgba(0,0,0,0.45);
+  --shadow-lg-val: 0 12px 32px rgba(0,0,0,0.5);
+  --shadow-elevated-val: 0 20px 48px rgba(0,0,0,0.55);
+  --shadow-modal-val: 0 24px 64px rgba(0,0,0,0.65);
+
+  --ease-standard-val: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-emphasized-val: cubic-bezier(0.2, 0, 0, 1);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  body {
+    background-color: var(--color-bg-val);
+    color: var(--color-text-primary-val);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Animations from the spec */
+@keyframes shimmer {
+  0%   { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    100deg,
+    var(--color-surface-elevated-val) 30%,
+    rgba(255,255,255,0.06) 50%,
+    var(--color-surface-elevated-val) 70%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1400ms linear infinite;
 }
