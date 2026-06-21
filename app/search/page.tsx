@@ -34,7 +34,7 @@ export default async function SearchPage({
   }
 
   return (
-    <div className="max-w-[1440px] mx-auto w-full px-[var(--space-4)] md:px-[var(--space-6)] py-[var(--space-12)]">
+    <div className="max-w-[1440px] mx-auto w-full px-4 md:px-8 py-12">
       {query && movies.length > 0 && (
         <div className="flex items-baseline gap-3 mb-[var(--space-8)]">
           <h2 className="text-[28px] font-bold tracking-tight text-[var(--color-text-primary)]">

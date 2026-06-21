@@ -9,7 +9,7 @@ import { getImageUrl, GENRE_MAP } from '@/lib/utils';
 import { RatingBadge } from './RatingBadge';
 import { FavoriteButton } from './FavoriteButton';
 
-export function MovieCard({ movie }: { movie: Movie }) {
+export function MovieCard({ movie, priority = false }: { movie: Movie, priority?: boolean }) {
   const primaryGenre = movie.genreIds?.[0] ? GENRE_MAP[movie.genreIds[0]] : 'Movie';
   
   return (
@@ -24,6 +24,7 @@ export function MovieCard({ movie }: { movie: Movie }) {
             src={getImageUrl(movie.posterPath, 'w342')}
             alt={movie.title}
             fill
+            priority={priority}
             className="object-cover transition-transform duration-500 ease-[var(--ease-standard)] group-hover:scale-105"
             sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"
           />
@@ -34,7 +35,7 @@ export function MovieCard({ movie }: { movie: Movie }) {
             <RatingBadge rating={movie.rating} />
           </div>
           
-          <div className="absolute top-0 right-0 bottom-0 left-0 z-20 pointer-events-none">
+          <div className="absolute top-[var(--space-2)] right-[var(--space-2)] z-20 pointer-events-none">
             <div className="pointer-events-auto">
               <FavoriteButton movie={movie} variant="card" />
             </div>

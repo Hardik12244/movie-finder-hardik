@@ -68,7 +68,7 @@ export default async function Home({
         <RecentlyViewedCarousel />
       )}
       
-      <div id="browse-grid" className="max-w-[1440px] mx-auto w-full px-[var(--space-4)] md:px-[var(--space-6)] py-[var(--space-8)]">
+      <div id="browse-grid" className="max-w-[1440px] mx-auto w-full px-4 md:px-8 py-8 md:py-12">
         {validPage === 1 && (
           <div className="flex flex-col md:flex-row md:items-center justify-between mb-[var(--space-8)] gap-4">
             <h2 className="text-[28px] md:text-[32px] font-bold tracking-tight text-[var(--color-text-primary)]">

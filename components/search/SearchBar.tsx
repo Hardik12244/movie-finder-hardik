@@ -18,7 +18,7 @@ function SearchBarInner() {
   const [isFocused, setIsFocused] = useState(false);
   const [isPending, setIsPending] = useState(false);
   
-  const debouncedQuery = useDebounce(query, 400);
+  const debouncedQuery = useDebounce(query, 800);
   const initialRender = useRef(true);
   const lastPushedQuery = useRef(initialQuery);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -53,6 +53,7 @@ function SearchBarInner() {
     }
 
     if (debouncedQuery === lastPushedQuery.current) {
+      setIsPending(false);
       return;
     }
 
@@ -61,9 +62,11 @@ function SearchBarInner() {
 
     if (debouncedQuery.trim() !== '') {
       addRecentSearch(debouncedQuery);
+      window.dispatchEvent(new Event('route-change-start'));
       router.push(`/search?q=${encodeURIComponent(debouncedQuery)}&page=1`);
     } else {
       if (pathname === '/search') {
+        window.dispatchEvent(new Event('route-change-start'));
         router.push('/');
       }
     }
@@ -94,9 +97,11 @@ function SearchBarInner() {
           if (query.trim() !== '' && query !== currentQ) {
             lastPushedQuery.current = query;
             addRecentSearch(query);
+            window.dispatchEvent(new Event('route-change-start'));
             router.push(`/search?q=${encodeURIComponent(query)}&page=1`);
             inputRef.current?.blur();
           } else if (query.trim() === '' && pathname === '/search') {
+            window.dispatchEvent(new Event('route-change-start'));
             router.push('/');
             inputRef.current?.blur();
           }

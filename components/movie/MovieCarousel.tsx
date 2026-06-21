@@ -45,7 +45,7 @@ export function MovieCarousel({ title, movies }: MovieCarouselProps) {
 
   return (
     <div className="w-full py-[var(--space-6)]" ref={containerRef}>
-      <div className="flex items-center justify-between mb-[var(--space-4)] px-[var(--space-4)] md:px-[var(--space-8)] lg:px-[var(--space-12)] max-w-[1440px] mx-auto">
+      <div className="flex items-center justify-between mb-4 px-4 md:px-8 lg:px-12 max-w-[1440px] mx-auto">
         <h2 className="text-[20px] md:text-[24px] font-bold text-[var(--color-text-primary)] tracking-tight">
           {title}
         </h2>
@@ -66,16 +66,16 @@ export function MovieCarousel({ title, movies }: MovieCarouselProps) {
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
-          className="flex overflow-x-auto gap-[var(--space-4)] md:gap-[var(--space-6)] pb-[var(--space-6)] px-[var(--space-4)] md:px-[var(--space-8)] lg:px-[var(--space-12)] scrollbar-hide snap-x snap-mandatory max-w-[1440px] mx-auto"
+          className="flex overflow-x-auto gap-4 md:gap-6 pb-6 px-4 md:px-8 lg:px-12 scrollbar-hide snap-x snap-mandatory max-w-[1440px] mx-auto"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {movies.map((movie) => (
+          {movies.map((movie, i) => (
             <motion.div 
               key={movie.id} 
               variants={itemVariants} 
               className="flex-shrink-0 w-[140px] md:w-[180px] lg:w-[220px] snap-start h-full"
             >
-              <MovieCard movie={movie} />
+              <MovieCard movie={movie} priority={i < 4} />
             </motion.div>
           ))}
         </motion.div>

@@ -137,14 +137,14 @@ export function Hero({ movie, rank, isTrending }: HeroProps) {
           </motion.p>
           
           <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-[var(--space-4)]">
-            <Link href={`/movie/${movie.id}`} passHref legacyBehavior>
-              <Button variant="primary" size="lg" className="w-full sm:w-auto px-[var(--space-8)] shadow-[0_4px_24px_rgba(124,92,252,0.4)] hover:shadow-[0_6px_32px_rgba(124,92,252,0.6)] group">
-                <span className="relative z-10 flex items-center gap-2">
-                  View Details
-                </span>
-                {/* Subtle glowing effect */}
-                <div className="absolute inset-0 rounded-[var(--radius-md)] bg-[var(--color-primary)] opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500" />
-              </Button>
+            <Link 
+              href={`/movie/${movie.id}`} 
+              className="inline-flex items-center justify-center rounded-[var(--radius-md)] text-[15px] font-medium transition-all duration-100 ease-[var(--ease-standard)] active:scale-[0.97] bg-[var(--color-primary)] text-white hover:-translate-y-1 h-12 w-full sm:w-auto px-[var(--space-8)] shadow-[0_4px_24px_rgba(124,92,252,0.4)] hover:shadow-[0_6px_32px_rgba(124,92,252,0.6)] group"
+            >
+              <span className="relative z-10 flex items-center gap-2">
+                View Details
+              </span>
+              <div className="absolute inset-0 rounded-[var(--radius-md)] bg-[var(--color-primary)] opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500" />
             </Link>
             <Button 
               variant="secondary" 

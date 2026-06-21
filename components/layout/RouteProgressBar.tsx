@@ -41,19 +41,6 @@ function RouteProgressBarInner() {
       timeoutRef.current = setTimeout(() => setProgress(85), 50);
     };
 
-    const originalPushState = window.history.pushState;
-    const originalReplaceState = window.history.replaceState;
-
-    window.history.pushState = function (...args) {
-      handleStart();
-      return originalPushState.apply(this, args);
-    };
-    
-    window.history.replaceState = function (...args) {
-      handleStart();
-      return originalReplaceState.apply(this, args);
-    };
-
     const handleClick = (e: MouseEvent) => {
       const target = (e.target as HTMLElement).closest('a');
       if (!target || !target.href) return;
@@ -71,10 +58,13 @@ function RouteProgressBarInner() {
 
     document.addEventListener('click', handleClick);
 
+    // Custom event listener for programmatic navigation
+    const handleCustomNav = () => handleStart();
+    window.addEventListener('route-change-start', handleCustomNav);
+
     return () => {
-      window.history.pushState = originalPushState;
-      window.history.replaceState = originalReplaceState;
       document.removeEventListener('click', handleClick);
+      window.removeEventListener('route-change-start', handleCustomNav);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, []);

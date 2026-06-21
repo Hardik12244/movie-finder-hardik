@@ -41,9 +41,9 @@ export function MovieGrid({ movies = [], isLoading = false }: MovieGridProps) {
           </motion.div>
         ))
       ) : (
-        movies.map((movie) => (
+        movies.map((movie, i) => (
           <motion.div key={movie.id} variants={itemVariants} className="h-full">
-            <MovieCard movie={movie} />
+            <MovieCard movie={movie} priority={i < 8} />
           </motion.div>
         ))
       )}
