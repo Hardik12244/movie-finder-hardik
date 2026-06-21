@@ -1,22 +1,42 @@
-# AI_LOG
+AI LOG
 
-## Tools Used
+# Tools used
 
-Gemini 1.5 Pro via Antigravity IDE (Google DeepMind Advanced Agentic Coding environment)
+* ChatGPT – Used throughout the project for brainstorming features, reviewing assignment requirements, debugging issues, and improving the overall user experience
+* Claude – Used mainly in the planning phase to generate a detailed product specification, UI ideas, and implementation roadmap.
+* Antigravity – Used for generating components, implementing features, and speeding up development
+* TMDB API – Used as the source of movie data for browsing, searching, recommendations, and movie details.
 
-## Best Prompts
+# Best Prompts
 
-1. "The search input has a UX bug. Current behavior: While typing, text temporarily disappears or reverts to older values. The input appears to refresh during navigation. Investigate SearchBar.tsx."
-   — This worked perfectly because it provided the exact component (`SearchBar.tsx`) and clearly described the race-condition between local state and the URL sync, enabling an immediate diagnosis of the Next.js `searchParams` effect bug.
+### 1. Product Specification Prompt
 
-2. "about serach thing in search bas there is no problem but on pressing enter its refershing again and again solve this"
-   — This prompt correctly identified the native HTML form submission behavior; wrapping the input in a `<form onSubmit={(e) => e.preventDefault()}>` immediately fixed the full-page reload on Enter.
+"Act as a Staff Frontend Engineer, Product Designer, and Technical Lead. Create a complete product specification for a premium movie discovery app including architecture, UI system, animations, responsive behavior, accessibility, and implementation roadmap."
 
-3. "after typing and pressing enter it give search result and isntantly keep refershing whole page also the url in urlbar every sec"
-   — This was highly effective because it described the exact symptom (rapid URL flickering every second), allowing me to deduce that the two `SearchBar` components (desktop and mobile) were ping-ponging an infinite loop via the shared `useSearchParams` dependency.
+Why it worked:
 
-## What I Fixed Manually
+Instead of jumping straight into coding, this helped me get a clear plan for the project structure, UI, and features before implementation started.
 
-I had to manually intervene and fix a race condition / infinite loop in the `SearchBar.tsx` that I initially misunderstood. Initially, I added `searchParams` to the dependency array of the `useEffect` that handles `router.push`. Because the header renders two `SearchBar` components (desktop and mobile), when one pushed a URL change, the other detected the `searchParams` change and immediately fired its own stale push effect, causing an infinite loop that crashed the page. I had to manually decouple the URL syncing from the push execution by relying on a `useRef` (`lastPushedQuery.current`) instead of raw `searchParams` state.
+### 2. Product Improvement Prompt
 
-Additionally, during a refactor of that same component, the AI instructed a change from a `<div>` wrapper to a `<form>` wrapper, but failed to update the closing tag (leaving `</div>`). This resulted in invalid HTML. I manually investigated the file using the `view_file` tool to find and replace the closing `</div>` with `</form>`.
+"Transform the project from a movie browser into a movie discovery platform. Focus on improving discovery, engagement, search experience, recommendations, and overall user experience rather than adding unnecessary features."
+
+Why it worked:
+
+The first version of the app met the requirements but felt pretty basic. This prompt helped identify features that made the app feel more complete and enjoyable to use.
+
+### 3. Deployment and QA Prompt
+
+"Perform a complete deployment audit, verify assignment requirements, run lint/build checks, identify issues, and prepare the project for production deployment."
+
+Why it worked:
+
+This was useful near the end of development because it helped catch smaller issues that are easy to miss before deployment and submission.
+
+# What I Fixed Manually
+
+* The search flow needed some manual adjustments because the generated implementation didn't always behave as expected when navigating between pages and updating results.
+* I repeatedly cross-checked the assignment PDF to make sure important requirements such as pagination, footer text, repository naming, and AI_LOG formatting were not missed.
+* Some generated UI ideas looked visually impressive but felt unnecessary for the assignment, so I removed or simplified them to keep the project focused.
+* I manually tested the application on different screen sizes and made layout adjustments where spacing, card sizes, or scrolling behavior didn't feel right.
+* During final testing I reviewed the generated code, fixed small issues, and cleaned up parts of the UI to make the experience feel more consistent.
