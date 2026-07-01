@@ -1,4 +1,4 @@
-import { TMDBMovie, Movie } from './types';
+import { TMDBMovie, Movie, TMDBTVShow, TVShow } from './types';
 import { formatYear } from '../utils';
 
 const BASE_URL = 'https://api.themoviedb.org/3';
@@ -40,5 +40,23 @@ export function normalizeMovie(movie: TMDBMovie): Movie {
     overview: movie.overview,
     genreIds: movie.genre_ids,
     popularity: movie.popularity,
+    mediaType: 'movie',
   };
 }
+
+export function normalizeTVShow(show: TMDBTVShow): TVShow {
+  return {
+    id: show.id,
+    title: show.name,
+    posterPath: show.poster_path,
+    backdropPath: show.backdrop_path,
+    releaseYear: formatYear(show.first_air_date || ''),
+    rating: show.vote_average,
+    voteCount: show.vote_count,
+    overview: show.overview,
+    genreIds: show.genre_ids,
+    popularity: show.popularity,
+    mediaType: 'tv',
+  };
+}
+

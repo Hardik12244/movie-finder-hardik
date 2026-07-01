@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Clock, Globe, Activity, Info, DollarSign, Building2, TrendingUp } from 'lucide-react';
 import { MovieCarousel } from '@/components/movie/MovieCarousel';
 import { RecentlyViewedTracker } from '@/components/movie/RecentlyViewed';
+import { MoviePersonalTracker } from '@/components/movie/MoviePersonalTracker';
 import { Movie } from '@/lib/tmdb/types';
 
 export default async function MovieDetailPage({
@@ -188,6 +189,19 @@ export default async function MovieDetailPage({
                   </div>
                 )}
               </div>
+            </div>
+
+            <div className="w-full max-w-[1000px]">
+              <MoviePersonalTracker
+                movie={{
+                  id: movie.id,
+                  title: movie.title,
+                  posterPath: movie.posterPath,
+                  backdropPath: movie.backdropPath,
+                  releaseYear: movie.releaseYear,
+                  rating: movie.rating,
+                }}
+              />
             </div>
 
           </div>

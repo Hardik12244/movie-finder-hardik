@@ -1,10 +1,12 @@
 import { getPopularMovies, getTrendingMovies, getTopRatedMovies, getMoviesByGenre } from '@/lib/tmdb/movies';
+import { getPopularTVShows } from '@/lib/tmdb/tv';
 import { MovieGrid } from '@/components/movie/MovieGrid';
 import { Pagination } from '@/components/pagination/Pagination';
 import { Hero } from '@/components/home/Hero';
 import { MovieCarousel } from '@/components/movie/MovieCarousel';
 import { RecentlyViewedCarousel } from '@/components/movie/RecentlyViewed';
 import { GenreFilter } from '@/components/home/GenreFilter';
+import { HomeMediaTrackerSections } from '@/components/home/HomeMediaTrackerSections';
 import { Movie } from '@/lib/tmdb/types';
 
 export default async function Home({
@@ -21,20 +23,21 @@ export default async function Home({
   let movies: Movie[] = [];
   let trending: Movie[] = [];
   let topRated: Movie[] = [];
+  let popularTV: Movie[] = [];
   let totalPages = 0;
 
-  // Execute all required fetches in parallel (B3)
-  // No try/catch here; let the Next.js Error Boundary catch failures (B1)
   if (validPage === 1 && !genreId) {
-    const [mainGridData, trendingData, topRatedData] = await Promise.all([
+    const [mainGridData, trendingData, topRatedData, tvData] = await Promise.all([
       getPopularMovies(validPage),
       getTrendingMovies('week', 1),
-      getTopRatedMovies(1)
+      getTopRatedMovies(1),
+      getPopularTVShows(1)
     ]);
     movies = mainGridData.results;
     totalPages = mainGridData.totalPages;
     trending = trendingData.results;
     topRated = topRatedData.results;
+    popularTV = tvData.results;
   } else {
     const mainGridData = genreId 
       ? await getMoviesByGenre(genreId, validPage)
@@ -43,7 +46,6 @@ export default async function Home({
     totalPages = mainGridData.totalPages;
   }
 
-  // The hero should be the #1 trending movie, or just the first popular movie
   const heroMovie = trending.length > 0 ? trending[0] : movies[0];
 
   return (
@@ -53,8 +55,20 @@ export default async function Home({
       )}
       
       {validPage === 1 && !genreId && (
-        <div className="relative z-20 -mt-[var(--space-12)] pb-[var(--space-8)]">
+        <div className="relative z-20 -mt-[var(--space-12)] pb-[var(--space-4)]">
+          <HomeMediaTrackerSections />
+        </div>
+      )}
+
+      {validPage === 1 && !genreId && (
+        <div className="pb-[var(--space-8)] pt-[var(--space-6)]">
           <MovieCarousel title="Trending This Week" movies={trending.slice(1, 11)} />
+        </div>
+      )}
+
+      {validPage === 1 && !genreId && popularTV.length > 0 && (
+        <div className="pb-[var(--space-8)]">
+          <MovieCarousel title="Popular TV Series" movies={popularTV.slice(0, 10)} />
         </div>
       )}
 
@@ -84,3 +98,4 @@ export default async function Home({
     </div>
   );
 }
+

@@ -12,15 +12,14 @@ function SearchBarInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const initialQuery = searchParams.get('q') || '';
+  const urlQuery = searchParams.get('q') || '';
   
-  const [query, setQuery] = useState(initialQuery);
+  const [query, setQuery] = useState(urlQuery);
   const [isFocused, setIsFocused] = useState(false);
   const [isPending, setIsPending] = useState(false);
   
-  const debouncedQuery = useDebounce(query, 800);
-  const initialRender = useRef(true);
-  const lastPushedQuery = useRef(initialQuery);
+  const debouncedQuery = useDebounce(query, 600);
+  const lastPushedQuery = useRef(urlQuery);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const { recentSearches, addRecentSearch, clearRecentSearches, isHydrated } = useRecentHistory();
@@ -37,43 +36,33 @@ function SearchBarInner() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Sync state if URL changes externally (e.g., Back/Forward browser navigation)
+  // Sync state if URL changes externally when input is NOT focused
   useEffect(() => {
     const currentQ = searchParams.get('q') || '';
-    if (currentQ !== lastPushedQuery.current) {
+    if (!isFocused && document.activeElement !== inputRef.current) {
       setQuery(currentQ);
       lastPushedQuery.current = currentQ;
     }
-  }, [searchParams]);
+  }, [searchParams, isFocused]);
 
+  // Debounced auto-search ONLY when user is actively typing inside the focused input
   useEffect(() => {
-    if (initialRender.current) {
-      initialRender.current = false;
-      return;
-    }
-
-    if (debouncedQuery === lastPushedQuery.current) {
-      setIsPending(false);
-      return;
-    }
+    if (!isFocused || document.activeElement !== inputRef.current) return;
+    if (debouncedQuery === lastPushedQuery.current) return;
 
     setIsPending(true);
     lastPushedQuery.current = debouncedQuery;
 
     if (debouncedQuery.trim() !== '') {
-      addRecentSearch(debouncedQuery);
-      window.dispatchEvent(new Event('route-change-start'));
-      router.push(`/search?q=${encodeURIComponent(debouncedQuery)}&page=1`);
-    } else {
-      if (pathname === '/search') {
-        window.dispatchEvent(new Event('route-change-start'));
-        router.push('/');
-      }
+      addRecentSearch(debouncedQuery.trim());
+      router.push(`/search?q=${encodeURIComponent(debouncedQuery.trim())}&page=1`);
+    } else if (pathname === '/search') {
+      router.push('/search');
     }
     
     const timer = setTimeout(() => setIsPending(false), 300);
     return () => clearTimeout(timer);
-  }, [debouncedQuery, router, pathname]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [debouncedQuery]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleClear = () => {
     setQuery('');
@@ -83,7 +72,21 @@ function SearchBarInner() {
   const handleRecentClick = (recentQ: string) => {
     setQuery(recentQ);
     setIsFocused(false);
-    // debounced effect will handle the push
+    lastPushedQuery.current = recentQ;
+    router.push(`/search?q=${encodeURIComponent(recentQ)}&page=1`);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanQ = query.trim();
+    lastPushedQuery.current = cleanQ;
+    if (cleanQ !== '') {
+      addRecentSearch(cleanQ);
+      router.push(`/search?q=${encodeURIComponent(cleanQ)}&page=1`);
+    } else {
+      router.push('/search');
+    }
+    inputRef.current?.blur();
   };
 
   const showRecentDropdown = isFocused && isHydrated && recentSearches.length > 0 && query.trim() === '';
@@ -91,21 +94,7 @@ function SearchBarInner() {
   return (
     <div className="relative w-full max-w-md z-50">
       <form 
-        onSubmit={(e) => {
-          e.preventDefault();
-          const currentQ = searchParams.get('q') || '';
-          if (query.trim() !== '' && query !== currentQ) {
-            lastPushedQuery.current = query;
-            addRecentSearch(query);
-            window.dispatchEvent(new Event('route-change-start'));
-            router.push(`/search?q=${encodeURIComponent(query)}&page=1`);
-            inputRef.current?.blur();
-          } else if (query.trim() === '' && pathname === '/search') {
-            window.dispatchEvent(new Event('route-change-start'));
-            router.push('/');
-            inputRef.current?.blur();
-          }
-        }}
+        onSubmit={handleSubmit}
         className={cn(
           "relative flex items-center h-[48px] bg-[var(--color-surface)] border px-[var(--space-5)] transition-all duration-150 ease-[var(--ease-standard)] w-full",
           isFocused 
@@ -123,7 +112,7 @@ function SearchBarInner() {
         <input
           ref={inputRef}
           type="text"
-          placeholder="Search movies... (Press '/')"
+          placeholder="Search movies & TV shows... (Press '/')"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsFocused(true)}

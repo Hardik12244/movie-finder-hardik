@@ -28,26 +28,62 @@ export function Header() {
           <SearchBar />
         </div>
 
-        <nav className="flex items-center gap-1 sm:gap-4 shrink-0">
+        <nav className="flex items-center gap-1 sm:gap-2 shrink-0 overflow-x-auto max-w-full no-scrollbar">
           <Link 
             href="/"
             className={cn(
-              "text-[15px] font-medium transition-colors hover:text-[var(--color-text-primary)] px-3 py-2 rounded-[var(--radius-md)]",
+              "text-[14px] font-medium transition-colors hover:text-[var(--color-text-primary)] px-2.5 py-1.5 rounded-[var(--radius-md)]",
               pathname === '/' ? "text-[var(--color-text-primary)] bg-[var(--color-surface)]" : "text-[var(--color-text-secondary)]"
             )}
           >
             Browse
           </Link>
           <Link 
+            href="/watchlist"
+            className={cn(
+              "text-[14px] font-medium transition-colors hover:text-[var(--color-text-primary)] px-2.5 py-1.5 rounded-[var(--radius-md)]",
+              pathname === '/watchlist' ? "text-[var(--color-text-primary)] bg-[var(--color-surface)]" : "text-[var(--color-text-secondary)]"
+            )}
+          >
+            Watchlist
+          </Link>
+          <Link 
+            href="/completed"
+            className={cn(
+              "text-[14px] font-medium transition-colors hover:text-[var(--color-text-primary)] px-2.5 py-1.5 rounded-[var(--radius-md)] hidden lg:inline-block",
+              pathname === '/completed' ? "text-[var(--color-text-primary)] bg-[var(--color-surface)]" : "text-[var(--color-text-secondary)]"
+            )}
+          >
+            Completed
+          </Link>
+          <Link 
+            href="/rewatch"
+            className={cn(
+              "text-[14px] font-medium transition-colors hover:text-[var(--color-text-primary)] px-2.5 py-1.5 rounded-[var(--radius-md)] hidden xl:inline-block",
+              pathname === '/rewatch' ? "text-[var(--color-text-primary)] bg-[var(--color-surface)]" : "text-[var(--color-text-secondary)]"
+            )}
+          >
+            Rewatch
+          </Link>
+          <Link 
+            href="/stats"
+            className={cn(
+              "text-[14px] font-medium transition-colors hover:text-[var(--color-text-primary)] px-2.5 py-1.5 rounded-[var(--radius-md)]",
+              pathname === '/stats' ? "text-[var(--color-text-primary)] bg-[var(--color-surface)]" : "text-[var(--color-text-secondary)]"
+            )}
+          >
+            Stats
+          </Link>
+          <Link 
             href="/favorites"
             className={cn(
-              "text-[15px] font-medium transition-colors hover:text-[var(--color-text-primary)] px-3 py-2 rounded-[var(--radius-md)] flex items-center gap-2",
+              "text-[14px] font-medium transition-colors hover:text-[var(--color-text-primary)] px-2.5 py-1.5 rounded-[var(--radius-md)] flex items-center gap-1.5",
               pathname === '/favorites' ? "text-[var(--color-text-primary)] bg-[var(--color-surface)]" : "text-[var(--color-text-secondary)]"
             )}
           >
             <span>Favorites</span>
             {isHydrated && favorites.length > 0 && (
-              <span className="bg-[var(--color-surface-elevated)] text-[var(--color-accent)] text-[12px] font-bold px-2 py-0.5 rounded-[var(--radius-sm)]">
+              <span className="bg-[var(--color-surface-elevated)] text-[var(--color-accent)] text-[11px] font-bold px-1.5 py-0.5 rounded-[var(--radius-sm)]">
                 {favorites.length}
               </span>
             )}

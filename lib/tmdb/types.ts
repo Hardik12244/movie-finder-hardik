@@ -41,6 +41,7 @@ export interface Movie {
   overview: string;
   genreIds: number[];
   popularity: number;
+  mediaType?: 'movie' | 'tv';
 }
 
 export interface MovieDetail extends Movie {
@@ -60,3 +61,74 @@ export interface PaginatedMovies {
   totalPages: number;
   totalResults: number;
 }
+
+export interface TMDBTVShow {
+  id: number;
+  name: string;
+  poster_path: string | null;
+  backdrop_path: string | null;
+  first_air_date?: string;
+  vote_average: number;
+  vote_count: number;
+  overview: string;
+  genre_ids: number[];
+  popularity: number;
+}
+
+export interface TMDBSeason {
+  id: number;
+  name: string;
+  season_number: number;
+  episode_count: number;
+  poster_path: string | null;
+}
+
+export interface TMDBTVShowDetail extends TMDBTVShow {
+  number_of_seasons: number;
+  number_of_episodes: number;
+  seasons: TMDBSeason[];
+  genres: { id: number; name: string }[];
+  tagline: string;
+  status: string;
+  original_language: string;
+}
+
+export interface TMDBEpisode {
+  id: number;
+  name: string;
+  episode_number: number;
+  season_number: number;
+  overview: string;
+  still_path: string | null;
+  air_date?: string;
+}
+
+export interface TVShow extends Movie {
+  mediaType: 'tv';
+}
+
+export interface TVSeason {
+  id: number;
+  name: string;
+  seasonNumber: number;
+  episodeCount: number;
+  posterPath: string | null;
+}
+
+export interface TVShowDetail extends MovieDetail {
+  mediaType: 'tv';
+  numberOfSeasons: number;
+  numberOfEpisodes: number;
+  seasons: TVSeason[];
+}
+
+export interface TVEpisode {
+  id: number;
+  name: string;
+  episodeNumber: number;
+  seasonNumber: number;
+  overview: string;
+  stillPath: string | null;
+  airDate: string;
+}
+
