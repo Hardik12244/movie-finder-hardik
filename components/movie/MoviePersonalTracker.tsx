@@ -121,6 +121,31 @@ export function MoviePersonalTracker({ movie }: MoviePersonalTrackerProps) {
         </div>
       )}
 
+      {item?.status === 'plan_to_rewatch' && (
+        <div className="mb-6 p-4 rounded-[var(--radius-lg)] bg-gradient-to-r from-indigo-900/40 via-indigo-800/20 to-indigo-900/40 border border-indigo-500/40 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-indigo-500/20 rounded-full text-indigo-300">
+              <Bookmark className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="font-bold text-[16px] text-indigo-200">
+                In Your Rewatch Queue
+              </h4>
+              <p className="text-[13px] text-indigo-300/80">
+                You planned to rewatch this movie. Ready to begin your rewatch pass?
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={handleStartRewatch}
+            className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold text-[13px] rounded-[var(--radius-md)] transition-colors shadow-lg flex items-center gap-1.5 shrink-0"
+          >
+            <Repeat className="w-4 h-4" />
+            <span>Start Rewatching</span>
+          </button>
+        </div>
+      )}
+
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-[rgba(255,255,255,0.06)]">
         <div>
           <h3 className="text-[20px] font-bold text-[var(--color-text-primary)] flex items-center gap-3">
@@ -132,6 +157,8 @@ export function MoviePersonalTracker({ movie }: MoviePersonalTrackerProps) {
           </p>
         </div>
         <div className="flex items-center gap-3 flex-wrap">
+          <StatusSelector media={mediaMeta} />
+          
           <button
             onClick={handleMarkWatched}
             className="flex items-center gap-2 px-3.5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-[13px] rounded-[var(--radius-md)] transition-colors shadow-sm"

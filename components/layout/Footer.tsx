@@ -29,7 +29,7 @@ export function Footer() {
         
         <div className="pt-[var(--space-6)] border-t border-[var(--color-border)] flex justify-center">
           <p className="text-[13px] text-[var(--color-text-secondary)]">
-            Built for Jeevan — Hardik Garg
+            Hardik Garg
           </p>
         </div>
       </div>

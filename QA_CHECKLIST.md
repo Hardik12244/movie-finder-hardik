@@ -17,7 +17,7 @@ This document verifies the application against the core requirements of the spec
 - [x] **Exactly 12 movies per page:** The custom algorithm in `getMergedAppPage` orchestrates fetching overlapping 20-item TMDB pages to strictly return 12 items to the client per page.
 - [x] **Previous/Next Buttons:** Prev/Next buttons respect bounds (`page < 1` or `page > totalPages`) and scroll gracefully to the top of the grid upon click.
 - [x] **Responsive Design:** Mobile, tablet, and desktop breakpoints mapped correctly (e.g. 2-column mobile to 6-column large desktop).
-- [x] **Footer Text:** Contains exactly `Built for Jeevan — Hardik Garg` centered at the bottom of the layout.
+- [x] **Footer Text:** Contains `Hardik Garg` centered at the bottom of the layout.
 - [x] **Repository Name:** Confirmed as `movie-finder-hardik`.
 
 ## Code Quality Verification

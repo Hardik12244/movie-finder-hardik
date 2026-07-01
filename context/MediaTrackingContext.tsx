@@ -37,10 +37,13 @@ const MediaTrackingContext = createContext<MediaTrackingContextType | undefined>
 const JOURNAL_STORAGE_KEY = 'cinefolio_media_journal';
 const ACTIVITY_STORAGE_KEY = 'cinefolio_activity_history';
 
+import { useSession } from 'next-auth/react';
+
 export function MediaTrackingProvider({ children }: { children: ReactNode }) {
   const [trackItems, setTrackItems] = useState<MediaTrackItem[]>([]);
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [isHydrated, setIsHydrated] = useState(false);
+  const { data: session } = useSession();
 
   useEffect(() => {
     try {
@@ -58,14 +61,74 @@ export function MediaTrackingProvider({ children }: { children: ReactNode }) {
     setIsHydrated(true);
   }, []);
 
+  // Cloud Database Sync when user logs in
+  useEffect(() => {
+    if (!session?.user?.email || !isHydrated) return;
+
+    const syncWithCloud = async () => {
+      try {
+        // First push any existing local items that might not be in cloud
+        if (trackItems.length > 0) {
+          await fetch('/api/media', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ items: trackItems }),
+          });
+        }
+
+        // Then fetch merged cloud database state
+        const res = await fetch('/api/media');
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data.items) && data.items.length > 0) {
+            const cloudItems: MediaTrackItem[] = data.items.map((item: any) => ({
+              id: item.mediaId,
+              mediaType: item.mediaType,
+              title: item.title,
+              posterPath: item.posterPath,
+              backdropPath: item.backdropPath,
+              releaseYear: item.releaseYear,
+              tmdbRating: item.tmdbRating,
+              status: item.status,
+              personalRating: item.personalRating,
+              personalNotes: item.personalNotes,
+              watchedDate: item.watchedDate,
+              rewatchedDate: item.rewatchedDate,
+              rewatchCount: item.rewatchCount || 0,
+              watchedEpisodes: item.watchedEpisodes || [],
+              rewatchingEpisodes: item.rewatchingEpisodes || [],
+              totalEpisodes: item.totalEpisodes,
+              totalSeasons: item.totalSeasons,
+              updatedAt: item.updatedAt || new Date().toISOString(),
+            }));
+            setTrackItems(cloudItems);
+            localStorage.setItem(JOURNAL_STORAGE_KEY, JSON.stringify(cloudItems));
+          }
+        }
+      } catch (err) {
+        console.error('Cloud database sync error:', err);
+      }
+    };
+
+    syncWithCloud();
+  }, [session?.user?.email, isHydrated]);
+
   const persistItems = useCallback((items: MediaTrackItem[]) => {
     setTrackItems(items);
     try {
       localStorage.setItem(JOURNAL_STORAGE_KEY, JSON.stringify(items));
+      // Background non-blocking sync to MongoDB
+      if (session?.user?.email) {
+        fetch('/api/media', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ items }),
+        }).catch(err => console.error('Background MongoDB save failed:', err));
+      }
     } catch (e) {
       console.error('Failed to save media tracking data', e);
     }
-  }, []);
+  }, [session?.user?.email]);
 
   const persistActivities = useCallback((acts: ActivityItem[]) => {
     const trimmed = acts.slice(0, 100); // keep top 100 recent activities

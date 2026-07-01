@@ -8,6 +8,7 @@ import { ToastProvider } from "@/context/ToastContext";
 import { MediaTrackingProvider } from "@/context/MediaTrackingContext";
 import { ToastContainer } from "@/components/states/ToastContainer";
 import { RouteProgressBar } from "@/components/layout/RouteProgressBar";
+import { AuthProvider } from "@/components/providers/AuthProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -28,18 +29,20 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-[var(--color-bg)] text-[var(--color-text-primary)] font-sans">
         <RouteProgressBar />
-        <FavoritesProvider>
-          <MediaTrackingProvider>
-            <ToastProvider>
-              <Header />
-              <main className="flex-1 flex flex-col">
-                {children}
-              </main>
-              <Footer />
-              <ToastContainer />
-            </ToastProvider>
-          </MediaTrackingProvider>
-        </FavoritesProvider>
+        <AuthProvider>
+          <FavoritesProvider>
+            <MediaTrackingProvider>
+              <ToastProvider>
+                <Header />
+                <main className="flex-1 flex flex-col">
+                  {children}
+                </main>
+                <Footer />
+                <ToastContainer />
+              </ToastProvider>
+            </MediaTrackingProvider>
+          </FavoritesProvider>
+        </AuthProvider>
       </body>
     </html>
   );
